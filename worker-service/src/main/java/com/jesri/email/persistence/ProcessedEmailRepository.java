@@ -20,14 +20,18 @@ public interface ProcessedEmailRepository extends JpaRepository<ProcessedEmailEn
     List<Object[]> countGroupedByPriority();
 
     @Query("""
-            select p from ProcessedEmailEntity p
-            where (:classification is null or :classification = '' or p.classification = :classification)
+            select p from ProcessedEmailEntity p, EmailCacheEntity c
+            where c.cacheId = p.cacheId
+              and (:classification is null or :classification = '' or p.classification = :classification)
               and (:priority is null or :priority = '' or p.priority = :priority)
               and (
                    :q is null or :q = ''
                    or lower(p.emailId) like lower(concat('%', :q, '%'))
                    or lower(p.summary) like lower(concat('%', :q, '%'))
                    or lower(p.suggestedAction) like lower(concat('%', :q, '%'))
+                   or lower(c.subject) like lower(concat('%', :q, '%'))
+                   or lower(c.sender) like lower(concat('%', :q, '%'))
+                   or lower(c.bodyText) like lower(concat('%', :q, '%'))
               )
             """)
     Page<ProcessedEmailEntity> search(

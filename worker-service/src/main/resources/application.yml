@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: worker-service
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:emailprocessor}
     username: ${POSTGRES_USER:email}

@@ -217,7 +217,7 @@
           <option value="MEDIUM">MEDIUM</option>
           <option value="LOW">LOW</option>
         </select>
-        <input id="q" type="search" placeholder="Search summary, action, id…" />
+        <input id="q" type="search" placeholder="Search subject, sender, body, id…" />
         <button type="button" id="refresh">Refresh</button>
       </div>
       <div class="list" id="list"></div>
@@ -251,6 +251,23 @@
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;");
+    }
+
+    /** Accept ISO strings or epoch seconds/millis from the API. */
+    function formatWhen(value) {
+      if (value == null || value === "") return "";
+      let d;
+      if (typeof value === "number") {
+        // Seconds since epoch are ~1e9; millis are ~1e12.
+        d = new Date(value < 1e12 ? value * 1000 : value);
+      } else if (typeof value === "string" && /^\d+(\.\d+)?$/.test(value.trim())) {
+        const n = Number(value);
+        d = new Date(n < 1e12 ? n * 1000 : n);
+      } else {
+        d = new Date(value);
+      }
+      if (Number.isNaN(d.getTime())) return String(value);
+      return d.toLocaleString();
     }
 
     function renderCategories() {
@@ -385,7 +402,7 @@
                 <div class="subject">${escapeHtml(row.subject || row.summary || row.emailId)}</div>
                 <div class="snippet">${escapeHtml(row.summary || row.bodyPreview || "")}</div>
               </div>
-              <div class="meta">${row.processedAt ? new Date(row.processedAt).toLocaleString() : ""}</div>
+              <div class="meta">${formatWhen(row.processedAt)}</div>
             </div>
             <div class="dropdown">
               ${state.detailCache[row.emailId] ? renderDropdown(state.detailCache[row.emailId]) : `<div class="loading">Loading details…</div>`}
