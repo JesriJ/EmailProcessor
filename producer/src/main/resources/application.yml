@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: producer
+  main:
+    web-application-type: none
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:emailprocessor}
+    username: ${POSTGRES_USER:email}
+    password: ${POSTGRES_PASSWORD:email}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+producer:
+  dataset-path: ${DATASET_PATH:samples/emails-100.jsonl}
+  stream-key: emails:incoming
+  limit: ${PRODUCER_LIMIT:0}

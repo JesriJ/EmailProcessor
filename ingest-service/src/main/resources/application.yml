@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: ingest-service
+  main:
+    web-application-type: none
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:emailprocessor}
+    username: ${POSTGRES_USER:email}
+    password: ${POSTGRES_PASSWORD:email}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+ingest:
+  stream-key: emails:incoming
+  mail-mode: ${MAIL_MODE:synthetic}
+  max-messages: ${GMAIL_SYNC_MAX_MESSAGES:50}
+  lookback-days: ${GMAIL_SYNC_LOOKBACK_DAYS:7}
+  google-client-id: ${GOOGLE_CLIENT_ID:}
+  google-client-secret: ${GOOGLE_CLIENT_SECRET:}
+  google-refresh-token: ${GOOGLE_REFRESH_TOKEN:}
+  use-mock-gmail: ${USE_MOCK_GMAIL:true}
+  # Extra Gmail search operators appended after after:<epoch>, e.g. in:inbox -category:promotions
+  query: ${GMAIL_QUERY:}

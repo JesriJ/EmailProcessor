@@ -1,0 +1,14 @@
+{"emailId": "eval-0001", "subject": "Duplicate charge on invoice", "body": "I was charged twice for order 1001. Please refund.", "sender": "eval1@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "billing"}
+{"emailId": "eval-0002", "subject": "Wrong tax amount", "body": "My invoice includes incorrect sales tax.", "sender": "eval2@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "billing"}
+{"emailId": "eval-0003", "subject": "Login loop bug", "body": "I cannot log in; the page refreshes endlessly.", "sender": "eval3@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "technical"}
+{"emailId": "eval-0004", "subject": "API 500 errors", "body": "Our integration receives HTTP 500 from your API.", "sender": "eval4@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "technical"}
+{"emailId": "eval-0005", "subject": "Lost package", "body": "Carrier marked delivered but I never received the box.", "sender": "eval5@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "shipping"}
+{"emailId": "eval-0006", "subject": "Delayed shipment", "body": "My order is a week late according to tracking.", "sender": "eval6@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "shipping"}
+{"emailId": "eval-0007", "subject": "Close my account", "body": "Please delete my account and export my data.", "sender": "eval7@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "account"}
+{"emailId": "eval-0008", "subject": "Update email address", "body": "I need to change the email on my account.", "sender": "eval8@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "account"}
+{"emailId": "eval-0009", "subject": "Pricing question", "body": "What is included in the business plan?", "sender": "eval9@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "product"}
+{"emailId": "eval-0010", "subject": "SSO support", "body": "Do you support SAML SSO for enterprise?", "sender": "eval10@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "product"}
+{"emailId": "eval-0011", "subject": "Rude agent", "body": "Your support agent was dismissive and unhelpful.", "sender": "eval11@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "complaint"}
+{"emailId": "eval-0012", "subject": "Repeated failures", "body": "This is the third outage this month and I am frustrated.", "sender": "eval12@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "complaint"}
+{"emailId": "eval-0013", "subject": "Newsletter unsubscribe", "body": "Please stop sending marketing emails.", "sender": "eval13@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "other"}
+{"emailId": "eval-0014", "subject": "Office location", "body": "Where is your headquarters located?", "sender": "eval14@example.com", "receivedAt": "2026-10-01T12:00:00Z", "label": "other"}

@@ -1,0 +1,12 @@
+# Edit this list, then run: python scripts/freeze_categories.py
+# Runtime services load config/categories.lock — freeze again after edits.
+domain: customer_support
+promptVersion: v1
+categories:
+  - billing
+  - technical
+  - shipping
+  - account
+  - product
+  - complaint
+  - other

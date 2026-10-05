@@ -1,0 +1,15 @@
+{
+  "domain": "customer_support",
+  "promptVersion": "v1",
+  "categories": [
+    "billing",
+    "technical",
+    "shipping",
+    "account",
+    "product",
+    "complaint",
+    "other"
+  ],
+  "frozenAt": "2026-10-04T19:04:54.460270+00:00",
+  "sourceHash": "6fa6125388fe5f1e40c7e5715192c8b5c70eb2514bcca5a97816abc48ef4d720"
+}

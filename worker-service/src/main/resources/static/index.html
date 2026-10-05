@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EmailProcessor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg0: #0f1419;
+      --bg1: #1a2332;
+      --ink: #e8eef6;
+      --muted: #8fa3b8;
+      --line: rgba(232, 238, 246, 0.12);
+      --accent: #3d9bfd;
+      --good: #3ecf8e;
+      --warn: #f0b429;
+      --bad: #f07178;
+      --panel: rgba(255,255,255,0.03);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #243b55 0%, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #1b3a4b 0%, transparent 50%),
+        linear-gradient(160deg, var(--bg0), var(--bg1));
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--line); }
+    }
+    .sidebar, .main { padding: 1.25rem; }
+    .sidebar { border-right: 1px solid var(--line); background: rgba(0,0,0,0.15); }
+    .brand {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 1.8rem;
+      margin: 0 0 0.25rem;
+    }
+    .sub { color: var(--muted); font-size: 0.85rem; margin: 0 0 1.25rem; line-height: 1.4; }
+    .nav-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 1rem 0 0.4rem;
+    }
+    .cat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      padding: 0.5rem 0.65rem;
+      cursor: pointer;
+      text-align: left;
+      margin-bottom: 0.25rem;
+    }
+    .cat:hover { border-color: var(--line); background: var(--panel); }
+    .cat.active { border-color: rgba(61,155,253,0.45); background: rgba(61,155,253,0.12); }
+    .cat .count { color: var(--muted); font-size: 0.8rem; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    select, input[type="search"] {
+      background: #1e2a38;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font: inherit;
+      padding: 0.5rem 0.7rem;
+      min-width: 9rem;
+    }
+    select option, select optgroup {
+      color: #102033;
+      background: #ffffff;
+    }
+    input[type="search"] { flex: 1; min-width: 12rem; }
+    button, .linkbtn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(61,155,253,0.12);
+      color: var(--ink);
+      font: inherit;
+      padding: 0.5rem 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    button:hover, .linkbtn:hover { border-color: var(--accent); }
+    button.secondary { background: transparent; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 800px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    .stat {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 0.75rem 0.85rem;
+    }
+    .stat .label { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat .value { font-size: 1.4rem; font-weight: 700; margin-top: 0.2rem; }
+    .list { border: 1px solid var(--line); background: var(--panel); }
+    .item { border-bottom: 1px solid var(--line); }
+    .item:last-child { border-bottom: none; }
+    .row {
+      display: grid;
+      grid-template-columns: 1.2rem 6.5rem 5.5rem 1fr auto;
+      gap: 0.65rem;
+      padding: 0.85rem 0.95rem;
+      cursor: pointer;
+      align-items: start;
+    }
+    .row:hover, .item.open .row { background: rgba(61,155,253,0.08); }
+    .chev {
+      color: var(--muted);
+      font-size: 0.75rem;
+      line-height: 1.4;
+      transition: transform 0.15s ease;
+    }
+    .item.open .chev { transform: rotate(90deg); color: var(--accent); }
+    .pill {
+      display: inline-block;
+      padding: 0.12rem 0.4rem;
+      border: 1px solid var(--line);
+      font-size: 0.72rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .pill.high, .pill.urgent { color: var(--bad); border-color: rgba(240,113,120,0.4); }
+    .pill.medium { color: var(--warn); border-color: rgba(240,180,41,0.35); }
+    .pill.low { color: var(--good); border-color: rgba(62,207,142,0.35); }
+    .subject { font-weight: 500; margin-bottom: 0.2rem; }
+    .snippet { color: var(--muted); font-size: 0.85rem; line-height: 1.35; }
+    .meta { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
+    .dropdown {
+      display: none;
+      padding: 0 0.95rem 1rem 2.15rem;
+      background: rgba(0,0,0,0.18);
+      border-top: 1px solid var(--line);
+    }
+    .item.open .dropdown { display: block; }
+    .dropdown-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem 1.25rem;
+      margin-top: 0.85rem;
+    }
+    @media (max-width: 800px) { .dropdown-grid { grid-template-columns: 1fr; } }
+    .field .k {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+    .body {
+      white-space: pre-wrap;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.2);
+      padding: 0.75rem;
+      max-height: 220px;
+      overflow: auto;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+      align-items: center;
+    }
+    .hint { color: var(--muted); font-size: 0.8rem; margin-top: 0.65rem; line-height: 1.4; }
+    .pager { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.85rem; color: var(--muted); font-size: 0.85rem; }
+    .empty { color: var(--muted); padding: 1.5rem; }
+    .err { color: var(--bad); margin-top: 0.75rem; }
+    .loading { color: var(--muted); padding: 0.75rem 0; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h1 class="brand">EmailProcessor</h1>
+      <p class="sub">Click an email to expand its details and reply options in place.</p>
+      <div class="nav-label">Categories</div>
+      <div id="categories"></div>
+    </aside>
+
+    <main class="main">
+      <div class="stats" id="stats"></div>
+      <div class="toolbar">
+        <select id="priority">
+          <option value="all">All priorities</option>
+          <option value="URGENT">URGENT</option>
+          <option value="HIGH">HIGH</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="LOW">LOW</option>
+        </select>
+        <input id="q" type="search" placeholder="Search summary, action, id…" />
+        <button type="button" id="refresh">Refresh</button>
+      </div>
+      <div class="list" id="list"></div>
+      <div class="pager">
+        <button type="button" class="secondary" id="prev">Prev</button>
+        <button type="button" class="secondary" id="next">Next</button>
+        <span id="pageInfo"></span>
+      </div>
+      <p class="err" id="err" hidden></p>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      classification: "all",
+      priority: "all",
+      q: "",
+      page: 0,
+      size: 40,
+      totalPages: 0,
+      openId: null,
+      detailCache: {},
+      byClassification: {},
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderCategories() {
+      const entries = Object.entries(state.byClassification || {}).sort((a, b) => a[0].localeCompare(b[0]));
+      const total = entries.reduce((n, [, v]) => n + Number(v), 0);
+      const items = [["all", total], ...entries];
+      $("categories").innerHTML = items.map(([name, count]) => `
+        <button type="button" class="cat ${state.classification === name ? "active" : ""}" data-cat="${escapeHtml(name)}">
+          <span>${name === "all" ? "All" : escapeHtml(name)}</span>
+          <span class="count">${count}</span>
+        </button>
+      `).join("");
+      $("categories").querySelectorAll(".cat").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.classification = btn.dataset.cat;
+          state.page = 0;
+          state.openId = null;
+          loadList();
+          renderCategories();
+        });
+      });
+    }
+
+    async function loadStats() {
+      const stats = await fetch("/admin/stats").then((r) => r.json());
+      state.byClassification = stats.byClassification || {};
+      $("stats").innerHTML = [
+        ["Processed", stats.processed],
+        ["Cached", stats.cached],
+        ["Gmail", stats.gmailCached ?? 0],
+        ["DLQ", stats.dlqStreamLength],
+      ].map(([label, value]) => `
+        <div class="stat"><div class="label">${label}</div><div class="value">${value}</div></div>
+      `).join("");
+      renderCategories();
+    }
+
+    function renderDropdown(row) {
+      const gmailBtn = row.gmailUrl
+        ? `<a class="linkbtn" href="${escapeHtml(row.gmailUrl)}" target="_blank" rel="noopener">Open in Gmail → Reply</a>`
+        : `<button type="button" disabled title="Needs live Gmail thread id">Open in Gmail</button>`;
+      const mailtoBtn = row.mailtoUrl
+        ? `<a class="linkbtn" href="${escapeHtml(row.mailtoUrl)}">Reply via mail app</a>`
+        : "";
+      return `
+        <div class="actions">
+          ${gmailBtn}
+          ${mailtoBtn}
+        </div>
+        <div class="dropdown-grid">
+          <div class="field">
+            <div class="k">From</div>
+            <div>${escapeHtml(row.sender || "—")}</div>
+          </div>
+          <div class="field">
+            <div class="k">Suggested action</div>
+            <div>${escapeHtml(row.suggestedAction || "")}</div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1">
+            <div class="k">Summary</div>
+            <div>${escapeHtml(row.summary || "")}</div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1">
+            <div class="k">Body</div>
+            <div class="body">${escapeHtml(row.bodyText || "")}</div>
+          </div>
+        </div>
+        <p class="hint">
+          ${row.canOpenInGmail
+            ? "Open in Gmail jumps to this thread. Click Reply there to write your answer."
+            : "Live Gmail links appear after real Gmail ingest. Synthetic/mock mail can use the mail app link."}
+        </p>
+        <p class="hint">id: ${escapeHtml(row.emailId)} · source: ${escapeHtml(row.source || "—")}</p>
+      `;
+    }
+
+    async function toggleEmail(emailId) {
+      const item = document.querySelector(`.item[data-id="${CSS.escape(emailId)}"]`);
+      if (!item) return;
+
+      if (state.openId === emailId) {
+        item.classList.remove("open");
+        state.openId = null;
+        return;
+      }
+
+      document.querySelectorAll(".item.open").forEach((el) => el.classList.remove("open"));
+      state.openId = emailId;
+      item.classList.add("open");
+
+      const panel = item.querySelector(".dropdown");
+      if (state.detailCache[emailId]) {
+        panel.innerHTML = renderDropdown(state.detailCache[emailId]);
+        return;
+      }
+
+      panel.innerHTML = `<div class="loading">Loading details…</div>`;
+      try {
+        const row = await fetch("/admin/emails/" + encodeURIComponent(emailId)).then((r) => {
+          if (!r.ok) throw new Error("missing");
+          return r.json();
+        });
+        state.detailCache[emailId] = row;
+        if (state.openId === emailId) {
+          panel.innerHTML = renderDropdown(row);
+        }
+      } catch {
+        panel.innerHTML = `<div class="err">Could not load this email.</div>`;
+      }
+    }
+
+    async function loadList() {
+      $("err").hidden = true;
+      const params = new URLSearchParams({
+        page: String(state.page),
+        size: String(state.size),
+      });
+      if (state.classification && state.classification !== "all") params.set("classification", state.classification);
+      if (state.priority && state.priority !== "all") params.set("priority", state.priority);
+      if (state.q) params.set("q", state.q);
+      try {
+        const data = await fetch("/admin/emails?" + params.toString()).then((r) => r.json());
+        state.totalPages = data.totalPages || 0;
+        const items = data.items || [];
+        $("list").innerHTML = items.length ? items.map((row) => `
+          <div class="item ${state.openId === row.emailId ? "open" : ""}" data-id="${escapeHtml(row.emailId)}">
+            <div class="row">
+              <div class="chev">▸</div>
+              <div><span class="pill">${escapeHtml(row.classification)}</span></div>
+              <div><span class="pill ${(row.priority || "").toLowerCase()}">${escapeHtml(row.priority)}</span></div>
+              <div>
+                <div class="subject">${escapeHtml(row.subject || row.summary || row.emailId)}</div>
+                <div class="snippet">${escapeHtml(row.summary || row.bodyPreview || "")}</div>
+              </div>
+              <div class="meta">${row.processedAt ? new Date(row.processedAt).toLocaleString() : ""}</div>
+            </div>
+            <div class="dropdown">
+              ${state.detailCache[row.emailId] ? renderDropdown(state.detailCache[row.emailId]) : `<div class="loading">Loading details…</div>`}
+            </div>
+          </div>
+        `).join("") : `<div class="empty">No emails match this category / priority filter.</div>`;
+
+        $("list").querySelectorAll(".item").forEach((el) => {
+          el.querySelector(".row").addEventListener("click", () => toggleEmail(el.dataset.id));
+        });
+
+        $("pageInfo").textContent = `Page ${(data.page ?? 0) + 1} / ${Math.max(data.totalPages || 1, 1)} · ${data.totalItems || 0} emails`;
+        $("prev").disabled = state.page <= 0;
+        $("next").disabled = state.page + 1 >= (data.totalPages || 1);
+
+        if (state.openId) {
+          const stillThere = items.some((i) => i.emailId === state.openId);
+          if (stillThere) {
+            const openItem = document.querySelector(`.item[data-id="${CSS.escape(state.openId)}"]`);
+            if (openItem && !state.detailCache[state.openId]) toggleEmail(state.openId);
+          } else {
+            state.openId = null;
+          }
+        }
+      } catch {
+        $("err").hidden = false;
+        $("err").textContent = "Failed to load emails. Is the worker/gateway up?";
+      }
+    }
+
+    async function refreshAll() {
+      await loadStats();
+      await loadList();
+    }
+
+    $("priority").addEventListener("change", () => {
+      state.priority = $("priority").value;
+      state.page = 0;
+      state.openId = null;
+      loadList();
+    });
+    let qTimer;
+    $("q").addEventListener("input", () => {
+      clearTimeout(qTimer);
+      qTimer = setTimeout(() => {
+        state.q = $("q").value.trim();
+        state.page = 0;
+        state.openId = null;
+        loadList();
+      }, 250);
+    });
+    $("refresh").addEventListener("click", refreshAll);
+    $("prev").addEventListener("click", () => { if (state.page > 0) { state.page -= 1; state.openId = null; loadList(); } });
+    $("next").addEventListener("click", () => { state.page += 1; state.openId = null; loadList(); });
+
+    refreshAll();
+    setInterval(refreshAll, 15000);
+  </script>
+</body>
+</html>
