@@ -97,10 +97,3 @@ Invalid or out-of-taxonomy classifications are rejected by the AI service (HTTP 
 - Secrets live in environment / gitignored files only
 
 See [SECURITY.md](../SECURITY.md).
-
-## Non-goals
-
-- Multi-tenant SaaS auth
-- Sending mail or mutating Gmail labels
-- Guaranteed exactly-once side effects outside the `processed_emails` primary key
-- Training or fine-tuning models inside this repository

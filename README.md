@@ -157,8 +157,6 @@ powershell -File benchmark/scripts/run_10k_qwen.ps1 -WorkerCounts "1,2,4" -Email
 powershell -File failure-tests/scripts/run_reliability_qwen.ps1 -Emails 200
 ```
 
-Measured local results (Qwen3 8B via Ollama, where applicable) are summarized in [docs/STATUS.md](docs/STATUS.md). Throughput is dominated by model inference when not using `LLM_PROVIDER=mock`.
-
 ## Documentation
 
 | Doc | Contents |

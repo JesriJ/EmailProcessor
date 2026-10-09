@@ -1,22 +1,5 @@
 # Security
 
-## Secrets
-
-Never commit:
-
-- `.env`
-- `config/gmail-client-secrets.json`
-- OAuth refresh tokens, API keys, private keys
-
-Use `.env.example` and `config/gmail-client-secrets.example.json` as templates. `.gitignore` excludes secret paths.
-
-If a client secret or refresh token was ever shared or committed:
-
-1. Revoke the OAuth client or secret in Google Cloud Console
-2. Revoke app access at https://myaccount.google.com/permissions
-3. Rotate `OPENAI_API_KEY` / database passwords as applicable
-4. Generate new credentials and update local `.env` only
-
 ## Local network exposure
 
 Compose publishes Postgres, Redis, AI, and the admin gateway on **127.0.0.1** only. The admin UI and `/admin/*` API are **not authenticated**.
