@@ -162,9 +162,8 @@ powershell -File failure-tests/scripts/run_reliability_qwen.ps1 -Emails 200
 | Doc | Contents |
 |-----|----------|
 | [docs/SPECIFICATION.md](docs/SPECIFICATION.md) | System specification, data model, delivery guarantees |
-| [docs/OPERATIONS.md](docs/OPERATIONS.md) | Day-2 ops: reset, scale, OAuth issues, LLM tuning |
-| [docs/STATUS.md](docs/STATUS.md) | Implementation status and measured checks |
-| [SECURITY.md](SECURITY.md) | Secrets, localhost bindings, threat notes |
+| [docs/OPERATIONS.md](docs/OPERATIONS.md) | Day-2 ops: reset, scale, OAuth issues, LLM tuning
+| [SECURITY.md](SECURITY.md) | localhost bindings & threat notes |
 
 ## Development tests
 
