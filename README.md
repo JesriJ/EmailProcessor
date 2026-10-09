@@ -171,7 +171,3 @@ powershell -File failure-tests/scripts/run_reliability_qwen.ps1 -Emails 200
 cd worker-service; mvn test
 cd ..\ai-service; python -m pytest tests -q
 ```
-
-## License
-
-MIT — see [LICENSE](LICENSE).
